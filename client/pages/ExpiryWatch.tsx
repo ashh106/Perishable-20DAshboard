@@ -8,7 +8,7 @@ import {
   Clock,
   Filter,
   Eye,
-  Snooze,
+  Bell,
 } from "lucide-react";
 
 const expiryItems = [
