@@ -13,7 +13,23 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Open Sans", "system-ui", "sans-serif"],
+      },
       colors: {
+        // Walmart Brand Colors
+        walmart: {
+          blue: "#0071CE",
+          teal: "#00B3C6",
+          gray: "#F5F5F5",
+        },
+        // Status Colors
+        status: {
+          red: "#E53935",
+          yellow: "#FDD835",
+          green: "#43A047",
+        },
+        // Base Theme Colors
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
