@@ -6,7 +6,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { DashboardLayout } from "./components/DashboardLayout";
+import DashboardHome from "./pages/DashboardHome";
+import ExpiryWatch from "./pages/ExpiryWatch";
+import MarkdownRecommendations from "./pages/MarkdownRecommendations";
+import WasteRouting from "./pages/WasteRouting";
+import FreshnessQR from "./pages/FreshnessQR";
+import BestPracticesHub from "./pages/BestPracticesHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,7 +24,54 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route
+            path="/"
+            element={
+              <DashboardLayout>
+                <DashboardHome />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/expiry-watch"
+            element={
+              <DashboardLayout>
+                <ExpiryWatch />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/markdown"
+            element={
+              <DashboardLayout>
+                <MarkdownRecommendations />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/waste-routing"
+            element={
+              <DashboardLayout>
+                <WasteRouting />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/freshness-qr"
+            element={
+              <DashboardLayout>
+                <FreshnessQR />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/best-practices"
+            element={
+              <DashboardLayout>
+                <BestPracticesHub />
+              </DashboardLayout>
+            }
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
