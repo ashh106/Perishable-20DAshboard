@@ -197,7 +197,7 @@ export default function ExpiryWatch() {
                           Review
                         </Button>
                         <Button size="sm" variant="ghost">
-                          <Snooze className="w-4 h-4" />
+                          <Bell className="w-4 h-4" />
                         </Button>
                       </div>
                     </td>
