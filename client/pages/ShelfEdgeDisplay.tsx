@@ -377,38 +377,24 @@ export default function ShelfEdgeDisplay() {
         })}
       </div>
 
-      {/* Enhanced Cart Summary */}
+      {/* Cart Summary */}
       {selectedItems.length > 0 && (
-        <Card className="bg-gradient-to-r from-walmart-blue to-walmart-teal text-white border-walmart-blue">
+        <Card className="bg-walmart-blue text-white border-walmart-blue">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="w-5 h-5" />
-              Smart Cart Summary ({selectedItems.length} items)
-              <Badge className="bg-white/20 text-white">
-                {selectedStrategy.toUpperCase()} Strategy
+              Cart Summary ({selectedItems.length} items)
+              <Badge className="bg-walmart-teal text-white">
+                {calculateProgressiveDiscount(selectedItems.length)}% discount
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <p className="text-sm opacity-80">Avg Discount</p>
+                <p className="text-sm opacity-80">Total Discount</p>
                 <p className="text-2xl font-bold">
-                  {Math.round(
-                    selectedItems.reduce((sum, id) => {
-                      const item = shelfItems.find((i) => i.id === id);
-                      return (
-                        sum +
-                        (item
-                          ? calculateSmartDiscount(
-                              item,
-                              currentRecommendation.discount,
-                            )
-                          : 0)
-                      );
-                    }, 0) / selectedItems.length,
-                  )}
-                  %
+                  {calculateProgressiveDiscount(selectedItems.length)}%
                 </p>
               </div>
               <div>
@@ -425,83 +411,50 @@ export default function ShelfEdgeDisplay() {
               </div>
               <div>
                 <p className="text-sm opacity-80">Final Total</p>
-                <p className="text-2xl font-bold text-yellow-300">
+                <p className="text-2xl font-bold text-status-green">
                   $
                   {selectedItems
                     .reduce((total, id) => {
                       const item = shelfItems.find((i) => i.id === id);
                       return (
-                        total + (item ? calculateDiscountedPrice(item) : 0)
+                        total +
+                        (item
+                          ? calculateDiscountedPrice(
+                              item.currentPrice,
+                              selectedItems.length,
+                            )
+                          : 0)
                       );
                     }, 0)
                     .toFixed(2)}
                 </p>
               </div>
-              <div>
-                <p className="text-sm opacity-80">You Save</p>
-                <p className="text-2xl font-bold text-yellow-300">
-                  $
-                  {(
-                    selectedItems.reduce((total, id) => {
-                      const item = shelfItems.find((i) => i.id === id);
-                      return total + (item?.currentPrice || 0);
-                    }, 0) -
-                    selectedItems.reduce((total, id) => {
-                      const item = shelfItems.find((i) => i.id === id);
-                      return (
-                        total + (item ? calculateDiscountedPrice(item) : 0)
-                      );
-                    }, 0)
-                  ).toFixed(2)}
-                </p>
-              </div>
             </div>
 
-            {/* AI Insights */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/20">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="font-semibold">Expected Outcome</span>
-                </div>
-                <div className="space-y-1 text-sm opacity-90">
-                  <p>
-                    📈 Expected sales: {currentRecommendation.expectedSales}{" "}
-                    units
-                  </p>
-                  <p>⏱️ Time to sell: {currentRecommendation.timeToSell}</p>
-                  <p>🎯 AI Confidence: {currentRecommendation.confidence}%</p>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span className="font-semibold">Impact</span>
-                </div>
-                <div className="space-y-1 text-sm opacity-90">
-                  <p>🛡️ Waste prevention priority</p>
-                  <p>💰 Revenue optimization</p>
-                  <p>👥 Customer satisfaction boost</p>
-                </div>
-              </div>
+            <div className="mt-4 pt-4 border-t border-white/20">
+              <p className="text-sm opacity-90">
+                <strong>Progressive Savings:</strong> You saved $
+                {(
+                  selectedItems.reduce((total, id) => {
+                    const item = shelfItems.find((i) => i.id === id);
+                    return total + (item?.currentPrice || 0);
+                  }, 0) -
+                  selectedItems.reduce((total, id) => {
+                    const item = shelfItems.find((i) => i.id === id);
+                    return (
+                      total +
+                      (item
+                        ? calculateDiscountedPrice(
+                            item.currentPrice,
+                            selectedItems.length,
+                          )
+                        : 0)
+                    );
+                  }, 0)
+                ).toFixed(2)}{" "}
+                by buying {selectedItems.length} items together!
+              </p>
             </div>
-
-            {/* Bundle Benefits */}
-            {bundleRecommendations.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-white/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span className="font-semibold">Bundle Benefits Active</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {bundleRecommendations.map((bundle, index) => (
-                    <Badge key={index} className="bg-white/20 text-white">
-                      {bundle.name}: +{bundle.extraDiscount}%
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
