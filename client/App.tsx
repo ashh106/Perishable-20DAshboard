@@ -27,69 +27,70 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <DashboardLayout>
-                <DashboardHome />
-              </DashboardLayout>
-            }
-          />
-          <Route
-            path="/expiry-watch"
-            element={
-              <DashboardLayout>
-                <ExpiryWatch />
-              </DashboardLayout>
-            }
-          />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <DashboardLayout>
+                  <DashboardHome />
+                </DashboardLayout>
+              }
+            />
+            <Route
+              path="/expiry-watch"
+              element={
+                <DashboardLayout>
+                  <ExpiryWatch />
+                </DashboardLayout>
+              }
+            />
 
-          <Route
-            path="/waste-routing"
-            element={
-              <DashboardLayout>
-                <WasteRouting />
-              </DashboardLayout>
-            }
-          />
-          <Route
-            path="/freshness-qr"
-            element={
-              <DashboardLayout>
-                <FreshnessQR />
-              </DashboardLayout>
-            }
-          />
-          <Route
-            path="/best-practices"
-            element={
-              <DashboardLayout>
-                <BestPracticesHub />
-              </DashboardLayout>
-            }
-          />
-          <Route
-            path="/shelf-display"
-            element={
-              <DashboardLayout>
-                <ShelfEdgeDisplay />
-              </DashboardLayout>
-            }
-          />
-          <Route
-            path="/customer-feedback"
-            element={
-              <DashboardLayout>
-                <CustomerFeedback />
-              </DashboardLayout>
-            }
-          />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            <Route
+              path="/waste-routing"
+              element={
+                <DashboardLayout>
+                  <WasteRouting />
+                </DashboardLayout>
+              }
+            />
+            <Route
+              path="/freshness-qr"
+              element={
+                <DashboardLayout>
+                  <FreshnessQR />
+                </DashboardLayout>
+              }
+            />
+            <Route
+              path="/best-practices"
+              element={
+                <DashboardLayout>
+                  <BestPracticesHub />
+                </DashboardLayout>
+              }
+            />
+            <Route
+              path="/shelf-display"
+              element={
+                <DashboardLayout>
+                  <ShelfEdgeDisplay />
+                </DashboardLayout>
+              }
+            />
+            <Route
+              path="/customer-feedback"
+              element={
+                <DashboardLayout>
+                  <CustomerFeedback />
+                </DashboardLayout>
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
