@@ -601,11 +601,53 @@ export default function ShelfEdgeDisplay() {
                   </div>
 
                   {discountPercent > 0 && (
-                    <div className="mt-2 flex items-center space-x-1">
-                      <Sparkles className="w-3 h-3 text-walmart-teal" />
-                      <span className="text-xs text-walmart-teal font-medium">
-                        Progressive discount applied!
-                      </span>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center space-x-1">
+                        <Sparkles className="w-3 h-3 text-walmart-teal" />
+                        <span className="text-xs text-walmart-teal font-medium">
+                          Smart discount applied!
+                        </span>
+                      </div>
+                      {showAIInsights && (
+                        <div className="bg-gray-50 rounded p-2 text-xs">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Brain className="w-3 h-3 text-gray-400" />
+                            <span className="font-medium text-gray-700">
+                              AI Insights:
+                            </span>
+                          </div>
+                          <div className="space-y-1 text-gray-600">
+                            <div className="flex justify-between">
+                              <span>Demand Score:</span>
+                              <span
+                                className={
+                                  item.demandScore > 80
+                                    ? "text-green-600"
+                                    : item.demandScore > 60
+                                      ? "text-yellow-600"
+                                      : "text-red-600"
+                                }
+                              >
+                                {item.demandScore}/100
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Sell-through:</span>
+                              <span
+                                className={
+                                  item.sellThroughRate > 85
+                                    ? "text-green-600"
+                                    : item.sellThroughRate > 70
+                                      ? "text-yellow-600"
+                                      : "text-red-600"
+                                }
+                              >
+                                {item.sellThroughRate}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
