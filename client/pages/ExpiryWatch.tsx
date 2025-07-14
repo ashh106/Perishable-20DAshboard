@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   AlertTriangle,
   CheckCircle,
@@ -9,42 +15,47 @@ import {
   Filter,
   Eye,
   Bell,
+  Lightbulb,
+  ChevronDown,
+  ChevronUp,
+  Save,
+  Brain,
 } from "lucide-react";
+import { useExpiringItems, useInventoryMutations } from "@/hooks/useApiData";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { useAuth } from "@/hooks/useAuth";
 
-const expiryItems = [
-  {
-    id: 1,
-    sku: "MLK-001",
-    description: "Whole Milk 1 Gallon",
-    daysToExpiry: 1,
-    quantity: 24,
-    status: "critical",
-  },
-  {
-    id: 2,
-    sku: "MLK-002",
-    description: "2% Milk 1 Gallon",
-    daysToExpiry: 2,
-    quantity: 18,
-    status: "warning",
-  },
-  {
-    id: 3,
-    sku: "MLK-003",
-    description: "Skim Milk 1 Gallon",
-    daysToExpiry: 3,
-    quantity: 15,
-    status: "warning",
-  },
-  {
-    id: 4,
-    sku: "MLK-004",
-    description: "Organic Milk 1 Gallon",
-    daysToExpiry: 5,
-    quantity: 12,
-    status: "good",
-  },
-];
+// AI Recommendation generator
+const generateAIRecommendation = (item: any) => {
+  const daysLeft = item.daysToExpiry || item.days_to_expiry;
+  let recommendedDiscount = 10;
+  let reasoning = "Standard markdown for expiring item";
+
+  if (daysLeft <= 1) {
+    recommendedDiscount = 30;
+    reasoning = "Aggressive markdown needed - expires tomorrow";
+  } else if (daysLeft <= 2) {
+    recommendedDiscount = 20;
+    reasoning = "Moderate markdown to ensure sale within 2 days";
+  } else if (daysLeft <= 3) {
+    recommendedDiscount = 15;
+    reasoning = "Light markdown to start moving inventory";
+  }
+
+  return {
+    recommendedDiscount,
+    reasoning,
+    expectedSales: Math.min(
+      item.quantity || item.quantity_on_hand,
+      Math.ceil(
+        (item.quantity || item.quantity_on_hand) *
+          (recommendedDiscount / 100) *
+          2,
+      ),
+    ),
+    confidence: 85 + Math.random() * 10, // 85-95% confidence
+  };
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -73,6 +84,111 @@ const getStatusText = (status: string) => {
 };
 
 export default function ExpiryWatch() {
+  const { user } = useAuth();
+  const {
+    data: expiringItems,
+    loading,
+    refetch,
+  } = useExpiringItems(user?.storeId || "1234", 5);
+  const { updateItem } = useInventoryMutations();
+  const { sendMessage, lastMessage } = useWebSocket();
+
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [discountValues, setDiscountValues] = useState<Record<string, number>>(
+    {},
+  );
+  const [appliedRecommendations, setAppliedRecommendations] = useState<
+    Set<string>
+  >(new Set());
+  const [loadingApply, setLoadingApply] = useState<Set<string>>(new Set());
+
+  // Listen for real-time updates
+  useEffect(() => {
+    if (
+      lastMessage?.type === "inventory_update" ||
+      lastMessage?.type === "price_update"
+    ) {
+      refetch(); // Refresh data when real-time updates come in
+    }
+  }, [lastMessage, refetch]);
+
+  const toggleRow = (itemId: string) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(itemId)) {
+      newExpanded.delete(itemId);
+    } else {
+      newExpanded.add(itemId);
+      // Initialize discount value if not set
+      if (!discountValues[itemId]) {
+        const item = expiringItems?.find((i) => i.id === itemId);
+        if (item) {
+          const aiRec = generateAIRecommendation(item);
+          setDiscountValues((prev) => ({
+            ...prev,
+            [itemId]: aiRec.recommendedDiscount,
+          }));
+        }
+      }
+    }
+    setExpandedRows(newExpanded);
+  };
+
+  const handleDiscountChange = (itemId: string, value: number[]) => {
+    setDiscountValues((prev) => ({
+      ...prev,
+      [itemId]: value[0],
+    }));
+  };
+
+  const handleApplyDiscount = async (item: any) => {
+    const discount = discountValues[item.id] || 0;
+    const newPrice = item.current_price * (1 - discount / 100);
+
+    setLoadingApply((prev) => new Set([...prev, item.id]));
+
+    try {
+      // Update item in database
+      const success = await updateItem(item.id, {
+        current_price: newPrice,
+        discount_percent: discount,
+      });
+
+      if (success) {
+        // Add to applied recommendations
+        setAppliedRecommendations((prev) => new Set([...prev, item.id]));
+
+        // Send real-time update via WebSocket
+        sendMessage({
+          type: "price_update",
+          data: {
+            storeId: user?.storeId,
+            itemId: item.id,
+            oldPrice: item.current_price,
+            newPrice,
+            discountPercent: discount,
+          },
+        });
+
+        // Collapse the row after successful application
+        setTimeout(() => {
+          setExpandedRows((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(item.id);
+            return newSet;
+          });
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Failed to apply discount:", error);
+    } finally {
+      setLoadingApply((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id);
+        return newSet;
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header with Actions */}
