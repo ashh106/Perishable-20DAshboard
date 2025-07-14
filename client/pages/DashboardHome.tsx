@@ -12,7 +12,6 @@ import {
   RefreshCw,
   Lightbulb,
 } from "lucide-react";
-import { SiteMapFooter } from "@/components/SiteMapFooter";
 
 const kpiData = [
   {
