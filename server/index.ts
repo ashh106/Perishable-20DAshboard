@@ -1,29 +1,29 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { initializeDatabase } from "./database.js";
+import { initializeDatabase } from "./database";
 
 // Route imports
-import { handleDemo } from "./routes/demo.js";
+import { handleDemo } from "./routes/demo";
 import {
   getInventoryItems,
   updateInventoryItem,
   getExpiringItems,
   addInventoryItem,
-} from "./routes/inventory.js";
+} from "./routes/inventory";
 import {
   getDemandForecast,
   getMarkdownRecommendations,
   syncOrderToERP,
   getOptimizationInsights,
-} from "./routes/genai.js";
+} from "./routes/genai";
 import {
   submitCustomerFeedback,
   getFeedbackAnalytics,
   getSalesAnalytics,
   getKPIData,
   getStoreComparison,
-} from "./routes/analytics.js";
+} from "./routes/analytics";
 import {
   register,
   login,
@@ -32,8 +32,8 @@ import {
   getProfile,
   updateProfile,
   createDefaultAdmin,
-} from "./routes/auth.js";
-import { handleChat } from "./routes/chat.js";
+} from "./routes/auth";
+import { handleChat } from "./routes/chat";
 
 // Load environment variables
 dotenv.config();
