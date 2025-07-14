@@ -421,6 +421,9 @@ export default function DashboardHome() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Site-Map Footer */}
+      <SiteMapFooter />
     </div>
   );
 }
