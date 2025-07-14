@@ -84,7 +84,7 @@ const getStatusText = (status: string) => {
 };
 
 export default function ExpiryWatch() {
-  const { user } = useAuth() || { user: { storeId: "1234" } };
+  const { user } = useAuth();
   const {
     data: expiringItems,
     loading,
