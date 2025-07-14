@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardLayout } from "./components/DashboardLayout";
+import { AuthProvider } from "./components/AuthProvider";
 import DashboardHome from "./pages/DashboardHome";
 import ExpiryWatch from "./pages/ExpiryWatch";
 
