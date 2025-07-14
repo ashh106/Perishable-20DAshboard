@@ -102,6 +102,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       {item.isNew && (
                         <span className="absolute -top-1 -right-1 w-2 h-2 bg-walmart-teal rounded-full" />
                       )}
+                      {item.isEnhanced && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-status-green rounded-full animate-pulse" />
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
