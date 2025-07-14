@@ -1,11 +1,19 @@
 import { RequestHandler } from "express";
-import OpenAI from "openai";
 import { dbAll, dbGet, dbRun } from "../database.js";
 import { v4 as uuidv4 } from "uuid";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Conditional OpenAI import
+let openai: any = null;
+if (process.env.OPENAI_API_KEY) {
+  try {
+    const OpenAI = (await import("openai")).default;
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  } catch (error) {
+    console.warn("OpenAI not available:", error);
+  }
+}
 
 export const getDemandForecast: RequestHandler = async (req, res) => {
   try {
