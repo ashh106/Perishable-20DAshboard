@@ -13,6 +13,8 @@ import MarkdownRecommendations from "./pages/MarkdownRecommendations";
 import WasteRouting from "./pages/WasteRouting";
 import FreshnessQR from "./pages/FreshnessQR";
 import BestPracticesHub from "./pages/BestPracticesHub";
+import ShelfEdgeDisplay from "./pages/ShelfEdgeDisplay";
+import CustomerFeedback from "./pages/CustomerFeedback";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +71,22 @@ const App = () => (
             element={
               <DashboardLayout>
                 <BestPracticesHub />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/shelf-display"
+            element={
+              <DashboardLayout>
+                <ShelfEdgeDisplay />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/customer-feedback"
+            element={
+              <DashboardLayout>
+                <CustomerFeedback />
               </DashboardLayout>
             }
           />
