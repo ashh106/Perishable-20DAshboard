@@ -36,6 +36,9 @@ const shelfItems = [
     currentPrice: 4.99,
     status: "critical",
     inStock: 24,
+    category: "dairy",
+    demandScore: 85,
+    sellThroughRate: 92,
   },
   {
     id: 2,
@@ -49,6 +52,9 @@ const shelfItems = [
     currentPrice: 4.79,
     status: "warning",
     inStock: 18,
+    category: "dairy",
+    demandScore: 78,
+    sellThroughRate: 88,
   },
   {
     id: 3,
@@ -62,6 +68,9 @@ const shelfItems = [
     currentPrice: 4.59,
     status: "warning",
     inStock: 15,
+    category: "dairy",
+    demandScore: 65,
+    sellThroughRate: 75,
   },
   {
     id: 4,
@@ -75,8 +84,134 @@ const shelfItems = [
     currentPrice: 6.99,
     status: "good",
     inStock: 12,
+    category: "dairy",
+    demandScore: 72,
+    sellThroughRate: 68,
   },
 ];
+
+// GenAI Recommendation Engine
+const generateAIRecommendations = (items: any[], selectedCount: number) => {
+  const recommendations = {
+    optimal: {
+      discount: 0,
+      reasoning: "",
+      confidence: 0,
+      expectedSales: 0,
+      timeToSell: "",
+    },
+    aggressive: {
+      discount: 0,
+      reasoning: "",
+      confidence: 0,
+      expectedSales: 0,
+      timeToSell: "",
+    },
+    conservative: {
+      discount: 0,
+      reasoning: "",
+      confidence: 0,
+      expectedSales: 0,
+      timeToSell: "",
+    },
+  };
+
+  if (items.length === 0) return recommendations;
+
+  const avgDaysToExpiry =
+    items.reduce((sum, item) => sum + item.daysToExpiry, 0) / items.length;
+  const avgDemandScore =
+    items.reduce((sum, item) => sum + item.demandScore, 0) / items.length;
+  const totalStock = items.reduce((sum, item) => sum + item.inStock, 0);
+  const criticalItems = items.filter((item) => item.daysToExpiry <= 1).length;
+  const warningItems = items.filter((item) => item.daysToExpiry <= 3).length;
+
+  // Optimal Strategy
+  if (avgDaysToExpiry <= 1) {
+    recommendations.optimal = {
+      discount: Math.min(35 + selectedCount * 5, 50),
+      reasoning:
+        "High urgency - items expire within 24 hours. Aggressive pricing needed to prevent waste.",
+      confidence: 94,
+      expectedSales: Math.ceil(totalStock * 0.85),
+      timeToSell: "6-12 hours",
+    };
+  } else if (avgDaysToExpiry <= 2) {
+    recommendations.optimal = {
+      discount: Math.min(25 + selectedCount * 4, 45),
+      reasoning:
+        "Moderate urgency - balance between revenue and waste prevention. Bundle discount attracts customers.",
+      confidence: 89,
+      expectedSales: Math.ceil(totalStock * 0.72),
+      timeToSell: "12-18 hours",
+    };
+  } else {
+    recommendations.optimal = {
+      discount: Math.min(15 + selectedCount * 3, 35),
+      reasoning:
+        "Preventive pricing - early discount to encourage sales before critical period.",
+      confidence: 76,
+      expectedSales: Math.ceil(totalStock * 0.58),
+      timeToSell: "1-2 days",
+    };
+  }
+
+  // Aggressive Strategy
+  recommendations.aggressive = {
+    discount: Math.min(recommendations.optimal.discount + 10, 50),
+    reasoning:
+      "Maximum discount for quick turnover. Best for high-demand periods or clearance goals.",
+    confidence: 82,
+    expectedSales: Math.ceil(totalStock * 0.95),
+    timeToSell: recommendations.optimal.timeToSell.split("-")[0] + " hours",
+  };
+
+  // Conservative Strategy
+  recommendations.conservative = {
+    discount: Math.max(recommendations.optimal.discount - 8, 5),
+    reasoning:
+      "Minimal discount to maintain margins while still encouraging sales.",
+    confidence: 71,
+    expectedSales: Math.ceil(totalStock * 0.42),
+    timeToSell: "2-3 days",
+  };
+
+  return recommendations;
+};
+
+// Smart Bundle Recommendations
+const getBundleRecommendations = (selectedItems: any[]) => {
+  if (selectedItems.length < 2) return null;
+
+  const bundles = [
+    {
+      name: "Family Pack Deal",
+      description: "Perfect for large families - save more with more items!",
+      minItems: 2,
+      extraDiscount: 5,
+      icon: Users,
+      color: "bg-blue-500",
+    },
+    {
+      name: "Quick Sale Bundle",
+      description: "Help us reduce waste - get extra savings!",
+      minItems: 3,
+      extraDiscount: 8,
+      icon: Zap,
+      color: "bg-green-500",
+    },
+    {
+      name: "Clearance Combo",
+      description: "Maximum savings on expiring items",
+      minItems: 4,
+      extraDiscount: 12,
+      icon: Target,
+      color: "bg-red-500",
+    },
+  ];
+
+  return bundles.filter((bundle) => selectedItems.length >= bundle.minItems);
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
