@@ -35,7 +35,12 @@ import {
 
 const navigation = [
   { name: "Dashboard Home", href: "/", icon: Home },
-  { name: "Expiry Watch", href: "/expiry-watch", icon: AlertTriangle },
+  {
+    name: "Expiry Watch",
+    href: "/expiry-watch",
+    icon: AlertTriangle,
+    isEnhanced: true,
+  },
 
   { name: "Waste Routing", href: "/waste-routing", icon: Truck },
   { name: "Freshness QR", href: "/freshness-qr", icon: QrCode },
