@@ -10,6 +10,8 @@ import {
   Lightbulb,
   User,
   Menu,
+  Monitor,
+  Heart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,6 +38,18 @@ const navigation = [
   { name: "Markdown Recommendations", href: "/markdown", icon: Tag },
   { name: "Waste Routing", href: "/waste-routing", icon: Truck },
   { name: "Freshness QR", href: "/freshness-qr", icon: QrCode },
+  {
+    name: "Shelf-Edge Display",
+    href: "/shelf-display",
+    icon: Monitor,
+    isNew: true,
+  },
+  {
+    name: "Customer Feedback",
+    href: "/customer-feedback",
+    icon: Heart,
+    isNew: true,
+  },
   { name: "Best Practices Hub", href: "/best-practices", icon: Lightbulb },
 ];
 
@@ -74,11 +88,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={location.pathname === item.href}
-                    className="w-full"
+                    className="w-full relative"
                   >
                     <Link to={item.href}>
                       <item.icon className="w-4 h-4" />
                       <span className="font-medium">{item.name}</span>
+                      {item.isNew && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-walmart-teal rounded-full" />
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
