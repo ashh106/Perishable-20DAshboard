@@ -16,6 +16,9 @@
     "build:client": "vite build",
     "build:server": "vite build --config vite.config.server.ts",
     "start": "node dist/server/node-build.mjs",
+    "replit:dev": "npm install && npm run dev",
+    "replit:build": "npm install && npm run build && npm start",
+    "db:test": "node test-db.js",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc"
