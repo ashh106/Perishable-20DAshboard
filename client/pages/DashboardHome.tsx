@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Package, AlertTriangle, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  TrendingUp,
+  Package,
+  AlertTriangle,
+  Target,
+  ShoppingCart,
+  Brain,
+  Sync,
+  Lightbulb,
+} from "lucide-react";
 
 const kpiData = [
   {
@@ -25,11 +36,12 @@ const kpiData = [
     trendUp: false,
   },
   {
-    title: "Forecast Accuracy",
-    value: "85%",
-    icon: Target,
-    trend: "+5%",
+    title: "Next-Day Order Qty",
+    value: "850 gal",
+    icon: ShoppingCart,
+    trend: "AI Optimized",
     trendUp: true,
+    isNew: true,
   },
 ];
 
@@ -50,16 +62,56 @@ const wasteData = [
   { category: "Bakery", waste: 15, color: "bg-status-yellow" },
 ];
 
+const demandForecastData = [
+  { date: "Jan 1", actual: 145, predicted: 140, accuracy: 96.5 },
+  { date: "Jan 2", actual: 167, predicted: 170, accuracy: 98.2 },
+  { date: "Jan 3", actual: 158, predicted: 155, accuracy: 98.1 },
+  { date: "Jan 4", actual: 189, predicted: 185, accuracy: 97.9 },
+  { date: "Jan 5", actual: 201, predicted: 195, accuracy: 97.0 },
+  { date: "Jan 6", actual: 187, predicted: 190, accuracy: 98.4 },
+  { date: "Jan 7", actual: 156, predicted: 150, accuracy: 96.2 },
+];
+
+const proTips = [
+  "Try bundling milk + cereal for a 10% combo deal to increase basket size.",
+  "Progressive discounts drive 25% lift in near-expiry sell-through rates.",
+  "Reorder 10% less next week based on GenAI analysis to reduce overstocks.",
+  "Weather forecast shows rain - expect 15% higher hot beverage sales.",
+];
+
 export default function DashboardHome() {
+  const [orderSynced, setOrderSynced] = useState(false);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+
+  const handleSyncOrder = () => {
+    setOrderSynced(true);
+    setTimeout(() => setOrderSynced(false), 3000);
+  };
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTipIndex((prev) => (prev + 1) % proTips.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* KPI Tiles */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {kpiData.map((kpi) => (
-          <Card key={kpi.title} className="bg-white border-gray-200">
+          <Card key={kpi.title} className="bg-white border-gray-200 relative">
+            {kpi.isNew && (
+              <Badge className="absolute -top-2 -right-2 bg-walmart-teal text-white text-xs">
+                NEW
+              </Badge>
+            )}
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-medium text-gray-600">
                 {kpi.title}
+                {kpi.isNew && (
+                  <Brain className="inline w-4 h-4 ml-1 text-walmart-teal" />
+                )}
               </CardTitle>
               <kpi.icon className="h-5 w-5 text-walmart-blue" />
             </CardHeader>
@@ -70,12 +122,20 @@ export default function DashboardHome() {
               <div className="flex items-center mt-2">
                 <span
                   className={`text-sm font-medium ${
-                    kpi.trendUp ? "text-status-green" : "text-status-red"
+                    kpi.isNew
+                      ? "text-walmart-teal"
+                      : kpi.trendUp
+                        ? "text-status-green"
+                        : "text-status-red"
                   }`}
                 >
                   {kpi.trend}
                 </span>
-                <span className="text-sm text-gray-500 ml-1">vs last week</span>
+                {!kpi.isNew && (
+                  <span className="text-sm text-gray-500 ml-1">
+                    vs last week
+                  </span>
+                )}
               </div>
             </CardContent>
           </Card>
