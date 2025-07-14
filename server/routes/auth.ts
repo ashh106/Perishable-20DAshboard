@@ -125,7 +125,11 @@ export const authMiddleware: RequestHandler = (req, res, next) => {
 };
 
 export const roleMiddleware = (allowedRoles: string[]) => {
-  return (req: any, res: any, next: any) => {
+  return (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction,
+  ) => {
     if (!req.user) {
       return res.status(401).json({ error: "Authentication required" });
     }
@@ -138,11 +142,11 @@ export const roleMiddleware = (allowedRoles: string[]) => {
   };
 };
 
-export const getProfile: RequestHandler = async (req: any, res) => {
+export const getProfile: RequestHandler = async (req, res) => {
   try {
     const user = await dbGet(
       "SELECT id, email, name, role, store_id FROM users WHERE id = ?",
-      [req.user.userId],
+      [req.user?.userId],
     );
 
     if (!user) {
@@ -156,13 +160,13 @@ export const getProfile: RequestHandler = async (req: any, res) => {
   }
 };
 
-export const updateProfile: RequestHandler = async (req: any, res) => {
+export const updateProfile: RequestHandler = async (req, res) => {
   try {
     const { name } = req.body;
 
     await dbRun("UPDATE users SET name = ? WHERE id = ?", [
       name,
-      req.user.userId,
+      req.user?.userId,
     ]);
 
     res.json({ success: true });
