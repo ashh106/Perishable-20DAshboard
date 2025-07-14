@@ -44,8 +44,8 @@ export const getDemandForecast: RequestHandler = async (req, res) => {
 
     let aiRecommendation = null;
 
-    // Only call OpenAI if API key is available
-    if (process.env.OPENAI_API_KEY) {
+    // Only call OpenAI if available
+    if (openai) {
       try {
         const prompt = `You are a Walmart AI assistant for perishables management. 
         Based on the last 30 days of milk sales data: ${JSON.stringify(salesData.slice(-7))}, 
@@ -128,7 +128,7 @@ export const getMarkdownRecommendations: RequestHandler = async (req, res) => {
 
     let aiRecommendations = [];
 
-    if (process.env.OPENAI_API_KEY && expiringItems.length > 0) {
+    if (openai && expiringItems.length > 0) {
       try {
         const prompt = `As a Walmart AI pricing assistant, recommend markdown percentages for these expiring milk items:
         ${JSON.stringify(
@@ -253,7 +253,7 @@ export const getOptimizationInsights: RequestHandler = async (req, res) => {
 
     let aiInsights = null;
 
-    if (process.env.OPENAI_API_KEY) {
+    if (openai) {
       try {
         const prompt = `As a Walmart AI optimization expert, analyze this store's current metrics:
         ${JSON.stringify(metrics)}
