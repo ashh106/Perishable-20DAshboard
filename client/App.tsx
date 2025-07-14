@@ -9,7 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardLayout } from "./components/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
 import ExpiryWatch from "./pages/ExpiryWatch";
-import MarkdownRecommendations from "./pages/MarkdownRecommendations";
+
 import WasteRouting from "./pages/WasteRouting";
 import FreshnessQR from "./pages/FreshnessQR";
 import BestPracticesHub from "./pages/BestPracticesHub";
