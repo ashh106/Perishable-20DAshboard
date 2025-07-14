@@ -1,15 +1,32 @@
 [build]
-  command = "npm run build:client"
+  command = "npm run build:netlify"
   functions = "netlify/functions"
   publish = "dist/spa"
 
+[build.environment]
+  NODE_VERSION = "18"
 
 [functions]
-  external_node_modules = ["express"]
+  external_node_modules = ["express", "sqlite3", "bcryptjs", "jsonwebtoken", "openai", "cors", "dotenv", "uuid", "ws", "zod"]
   node_bundler = "esbuild"
-  
+
 [[redirects]]
   force = true
   from = "/api/*"
   status = 200
   to = "/.netlify/functions/api/:splat"
+
+# SPA fallback for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
