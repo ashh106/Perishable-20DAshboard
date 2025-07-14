@@ -250,56 +250,144 @@ export default function BestPracticesHub() {
 
       <Card className="bg-white border-gray-200">
         <CardHeader>
-          <CardTitle className="text-lg font-bold text-gray-900">
-            Top Performing Stores
+          <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
+            Store Performance Hub
+            <Badge className="bg-gray-100 text-gray-700">
+              {filteredStores.length} stores found
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {storeData.map((store) => (
-              <div
-                key={store.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-walmart-blue transition-colors"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-gray-900">
-                      Store {store.id}
-                    </h3>
-                    <Badge className={getPerformanceBadge(store.performance)}>
-                      {store.performance}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">{store.location}</p>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm">
-                      <strong>Spoilage Rate:</strong> {store.spoilageRate}
-                    </span>
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {filteredStores.map((store) => {
+              const isCopied = copiedStores.includes(store.id);
+              return (
+                <Card
+                  key={store.id}
+                  className={`border-2 transition-all duration-300 hover:shadow-lg ${
+                    store.performance === "excellent"
+                      ? "border-status-green/30 bg-status-green/5"
+                      : store.performance === "good"
+                        ? "border-walmart-blue/30 bg-walmart-blue/5"
+                        : "border-status-red/30 bg-status-red/5"
+                  }`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <h3 className="font-bold text-gray-900">
+                          Store {store.id}
+                        </h3>
+                        <Badge
+                          className={getPerformanceBadge(store.performance)}
+                        >
+                          {store.performance}
+                        </Badge>
+                        {store.aiRecommendations && (
+                          <Badge className="bg-walmart-teal text-white">
+                            <Brain className="w-3 h-3 mr-1" />
+                            AI
+                          </Badge>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleAdoptSettings(store.id)}
+                        className={`transition-all duration-300 ${
+                          isCopied
+                            ? "bg-status-green hover:bg-status-green/90"
+                            : "bg-walmart-blue hover:bg-walmart-blue/90"
+                        }`}
+                        disabled={isCopied}
+                      >
+                        {isCopied ? (
+                          <>
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-1" />
+                            Adopt Settings
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span>{store.location}</span>
+                      <span>•</span>
+                      <span>{store.region}</span>
+                    </div>
+                  </CardHeader>
 
-                <div className="flex-1 mx-4">
-                  <p className="text-sm font-medium text-gray-900 mb-2">
-                    Top 3 Actions:
-                  </p>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    {store.topActions.map((action, index) => (
-                      <li key={index}>• {action}</li>
-                    ))}
-                  </ul>
-                </div>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <p className="text-sm text-gray-600">Spoilage Rate</p>
+                        <p className="font-bold text-lg text-gray-900">
+                          {store.spoilageRate}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Weekly Savings</p>
+                        <p className="font-bold text-lg text-status-green">
+                          {store.savings}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Volume</p>
+                        <p className="font-bold text-lg text-walmart-blue">
+                          {store.weeklyVolume}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex-shrink-0">
-                  <Button
-                    size="sm"
-                    className="bg-walmart-blue hover:bg-walmart-blue/90"
-                  >
-                    Adopt Settings
-                  </Button>
-                </div>
-              </div>
-            ))}
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 mb-2">
+                        Top Actions:
+                      </p>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        {store.topActions.map((action, index) => (
+                          <li key={index} className="flex items-center">
+                            <span className="w-2 h-2 bg-walmart-blue rounded-full mr-2 flex-shrink-0" />
+                            {action}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-sm font-medium text-gray-900 mb-1">
+                        Success Story:
+                      </p>
+                      <p className="text-sm text-gray-700 italic">
+                        "{store.successStory}"
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
+
+          {filteredStores.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-500">
+                No stores match your current filters.
+              </p>
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={() => {
+                  setSearchTerm("");
+                  setRegionFilter("all");
+                  setPerformanceFilter("all");
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
