@@ -73,6 +73,33 @@ export function createServer() {
   // AI Chat route
   app.post("/api/protected/chat", handleChat);
 
+  // Recommendations routes (for real-time integration)
+  app.post("/api/protected/recommendations", async (req, res) => {
+    try {
+      const { storeId, sku, discountPct, originalPrice, newPrice } = req.body;
+      // This will be implemented with the recommendations module
+      res.json({
+        success: true,
+        message: "Recommendation applied successfully",
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to apply recommendation" });
+    }
+  });
+  app.get(
+    "/api/protected/stores/:storeId/recommendations",
+    async (req, res) => {
+      try {
+        const { storeId } = req.params;
+        // Return recommendation history
+        res.json([]);
+      } catch (error) {
+        res.status(500).json({ error: "Failed to get recommendations" });
+      }
+    },
+  );
+
   // Inventory management routes
   app.get("/api/protected/stores/:storeId/inventory", getInventoryItems);
   app.put("/api/protected/inventory/:itemId", updateInventoryItem);
