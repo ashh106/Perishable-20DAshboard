@@ -285,7 +285,7 @@ export default function DashboardHome() {
             className={`${orderSynced ? "bg-status-green" : "bg-walmart-blue"} hover:bg-walmart-blue/90 transition-colors`}
             disabled={orderSynced}
           >
-            <Sync
+            <RefreshCw
               className={`w-4 h-4 mr-2 ${orderSynced ? "" : "animate-spin"}`}
             />
             {orderSynced ? "Order Synced!" : "Sync Order to ERP"}
