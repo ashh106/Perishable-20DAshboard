@@ -142,8 +142,8 @@ export default function DashboardHome() {
         ))}
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Charts and Forecast Row */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Daily Sales Chart */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
@@ -230,6 +230,35 @@ export default function DashboardHome() {
                     </span>
                   </div>
                 ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pro Tips Panel */}
+        <Card className="bg-gradient-to-br from-walmart-blue to-walmart-teal text-white border-none">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+              <Lightbulb className="w-5 h-5" />
+              Pro Tip
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex flex-col justify-center">
+              <div className="text-center space-y-4">
+                <div className="text-lg font-medium leading-relaxed">
+                  {proTips[currentTipIndex]}
+                </div>
+                <div className="flex justify-center space-x-2">
+                  {proTips.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full ${
+                        index === currentTipIndex ? "bg-white" : "bg-white/30"
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </CardContent>
