@@ -9,7 +9,7 @@ import {
   Target,
   ShoppingCart,
   Brain,
-  Sync,
+  RefreshCw,
   Lightbulb,
 } from "lucide-react";
 
