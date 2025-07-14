@@ -32,9 +32,7 @@ export function AIChatbot({
   currentPage = "dashboard",
   contextData,
 }: AIChatbotProps) {
-  const { user } = useAuth() || {
-    user: { storeId: "1234", name: "Demo User", role: "associate" },
-  };
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
