@@ -376,7 +376,6 @@ export default function ExpiryWatch() {
                               variant="ghost"
                               onClick={() => toggleRow(item.id.toString())}
                               className="h-7 w-7 p-0 hover:bg-walmart-blue/10"
-                              title="AI Recommendation Available"
                             >
                               <Lightbulb className="w-4 h-4 text-walmart-teal" />
                             </Button>
