@@ -265,6 +265,118 @@ export default function DashboardHome() {
         </Card>
       </div>
 
+      {/* Demand Forecast Panel */}
+      <Card className="bg-white border-gray-200">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <Brain className="w-5 h-5 text-walmart-teal" />
+              30-Day Demand Forecast
+              <Badge className="bg-walmart-teal text-white text-xs">
+                Powered by GenAI
+              </Badge>
+            </CardTitle>
+            <p className="text-sm text-gray-600">
+              AI-powered predictions vs actual sales
+            </p>
+          </div>
+          <Button
+            onClick={handleSyncOrder}
+            className={`${orderSynced ? "bg-status-green" : "bg-walmart-blue"} hover:bg-walmart-blue/90 transition-colors`}
+            disabled={orderSynced}
+          >
+            <Sync
+              className={`w-4 h-4 mr-2 ${orderSynced ? "" : "animate-spin"}`}
+            />
+            {orderSynced ? "Order Synced!" : "Sync Order to ERP"}
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Forecast Chart */}
+            <div className="lg:col-span-2">
+              <div className="h-48 w-full">
+                <div className="flex items-end justify-between h-40 space-x-1">
+                  {demandForecastData.map((data, index) => (
+                    <div
+                      key={data.date}
+                      className="flex flex-col items-center flex-1"
+                    >
+                      <div className="flex items-end space-x-1 mb-2 w-full">
+                        <div
+                          className="bg-walmart-blue rounded-sm opacity-70 w-1/2"
+                          style={{
+                            height: `${(data.actual / 220) * 100}%`,
+                            minHeight: "15px",
+                          }}
+                          title={`Actual: ${data.actual}gal`}
+                        />
+                        <div
+                          className="bg-walmart-teal rounded-sm w-1/2"
+                          style={{
+                            height: `${(data.predicted / 220) * 100}%`,
+                            minHeight: "15px",
+                          }}
+                          title={`Predicted: ${data.predicted}gal`}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-600 text-center">
+                        {data.date}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-center space-x-6 mt-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-walmart-blue rounded-sm opacity-70" />
+                    <span className="text-sm text-gray-600">Actual</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-walmart-teal rounded-sm" />
+                    <span className="text-sm text-gray-600">AI Predicted</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Recommendations */}
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  GenAI Recommendations
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Suggested Order:
+                    </span>
+                    <span className="font-bold text-walmart-blue">850 gal</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Confidence:</span>
+                    <span className="font-semibold text-status-green">
+                      97.2%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Avg Accuracy:</span>
+                    <span className="font-semibold text-gray-900">97.6%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-walmart-teal/10 rounded-lg p-3">
+                <p className="text-sm text-gray-700">
+                  <strong>AI Insight:</strong> Weekend demand typically 15%
+                  higher. Weather forecast shows sunny conditions - expect
+                  increased sales.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Quick Actions */}
       <Card className="bg-white border-gray-200">
         <CardHeader>
