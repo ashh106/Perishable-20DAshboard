@@ -6,6 +6,7 @@ interface WebSocketMessage {
   data?: any;
   message?: string;
   timestamp?: string;
+  dataType?: string;
 }
 
 interface UseWebSocketReturn {
