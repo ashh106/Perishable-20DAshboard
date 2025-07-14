@@ -33,6 +33,7 @@ import {
   updateProfile,
   createDefaultAdmin,
 } from "./routes/auth.js";
+import { handleChat } from "./routes/chat.js";
 
 // Load environment variables
 dotenv.config();
