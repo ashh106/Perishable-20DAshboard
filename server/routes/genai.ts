@@ -2,24 +2,26 @@ import { RequestHandler } from "express";
 import { dbAll, dbGet, dbRun } from "../database.js";
 import { v4 as uuidv4 } from "uuid";
 
-// Conditional OpenAI import
 let openai: any = null;
-if (process.env.OPENAI_API_KEY) {
-  try {
-    const OpenAI = (await import("openai")).default;
-    openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  } catch (error) {
-    console.warn("OpenAI not available:", error);
+
+async function initOpenAI() {
+  if (process.env.OPENAI_API_KEY && !openai) {
+    try {
+      const OpenAI = (await import("openai")).default;
+      openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+    } catch (error) {
+      console.warn("OpenAI not available:", error);
+    }
   }
 }
 
 export const getDemandForecast: RequestHandler = async (req, res) => {
+  await initOpenAI();
   try {
     const { storeId } = req.params;
 
-    // Get historical sales data
     const salesData = await dbAll(
       `SELECT 
         DATE(sale_date) as date,
@@ -33,7 +35,6 @@ export const getDemandForecast: RequestHandler = async (req, res) => {
       [storeId],
     );
 
-    // Get existing forecasts
     const existingForecasts = await dbAll(
       `SELECT * FROM demand_forecasts 
        WHERE store_id = ? 
@@ -44,7 +45,6 @@ export const getDemandForecast: RequestHandler = async (req, res) => {
 
     let aiRecommendation = null;
 
-    // Only call OpenAI if available
     if (openai) {
       try {
         const prompt = `You are a Walmart AI assistant for perishables management. 
@@ -54,7 +54,7 @@ export const getDemandForecast: RequestHandler = async (req, res) => {
         2. Confidence level (0-100%)
         3. Key factors influencing the forecast
         4. Recommended markdown strategy for items expiring in 1-2 days
-        
+
         Respond in JSON format with: {
           "orderQuantity": number,
           "confidence": number,
@@ -77,11 +77,9 @@ export const getDemandForecast: RequestHandler = async (req, res) => {
         );
       } catch (openaiError) {
         console.error("OpenAI API error:", openaiError);
-        // Fallback to mock data if OpenAI fails
       }
     }
 
-    // Mock data if no OpenAI or on error
     if (!aiRecommendation) {
       aiRecommendation = {
         orderQuantity: 850,
@@ -110,10 +108,10 @@ export const getDemandForecast: RequestHandler = async (req, res) => {
 };
 
 export const getMarkdownRecommendations: RequestHandler = async (req, res) => {
+  await initOpenAI();
   try {
     const { storeId } = req.params;
 
-    // Get items expiring soon
     const expiringItems = await dbAll(
       `SELECT 
         i.*,
@@ -146,7 +144,7 @@ export const getMarkdownRecommendations: RequestHandler = async (req, res) => {
         - Items with 2-3 days can have moderate markdowns
         - Higher quantities may need steeper discounts
         - Maintain minimum 30% margin
-        
+
         Respond in JSON array format: [{
           "sku": string,
           "recommendedDiscount": number,
@@ -169,7 +167,6 @@ export const getMarkdownRecommendations: RequestHandler = async (req, res) => {
       }
     }
 
-    // Generate mock recommendations if no AI response
     if (aiRecommendations.length === 0) {
       aiRecommendations = expiringItems.map((item: any) => {
         const daysLeft = Math.round(item.days_to_expiry);
@@ -203,18 +200,10 @@ export const getMarkdownRecommendations: RequestHandler = async (req, res) => {
 export const syncOrderToERP: RequestHandler = async (req, res) => {
   try {
     const { storeId } = req.params;
-    const { orderQuantity, items } = req.body;
+    const { orderQuantity } = req.body;
 
-    // Simulate ERP integration delay
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // In a real implementation, this would:
-    // 1. Connect to Walmart's ERP system
-    // 2. Submit purchase order
-    // 3. Update inventory forecasts
-    // 4. Schedule delivery
-
-    // Log the order for audit trail
     const orderId = uuidv4();
     await dbRun(
       `INSERT INTO demand_forecasts 
@@ -236,10 +225,10 @@ export const syncOrderToERP: RequestHandler = async (req, res) => {
 };
 
 export const getOptimizationInsights: RequestHandler = async (req, res) => {
+  await initOpenAI();
   try {
     const { storeId } = req.params;
 
-    // Get current inventory metrics
     const metrics = await dbGet(
       `SELECT 
         COUNT(*) as total_items,
@@ -257,13 +246,13 @@ export const getOptimizationInsights: RequestHandler = async (req, res) => {
       try {
         const prompt = `As a Walmart AI optimization expert, analyze this store's current metrics:
         ${JSON.stringify(metrics)}
-        
+
         Provide 3-4 actionable insights to:
         1. Reduce spoilage
         2. Optimize pricing
         3. Improve inventory turnover
         4. Enhance customer satisfaction
-        
+
         Format as JSON: {
           "insights": [
             {
@@ -293,7 +282,6 @@ export const getOptimizationInsights: RequestHandler = async (req, res) => {
       }
     }
 
-    // Fallback insights
     if (!aiInsights) {
       aiInsights = {
         insights: [
