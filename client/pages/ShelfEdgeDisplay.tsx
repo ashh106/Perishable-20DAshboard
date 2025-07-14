@@ -99,57 +99,25 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function ShelfEdgeDisplay() {
+  const [baseDiscount, setBaseDiscount] = useState([15]);
+  const [multiplier, setMultiplier] = useState([1.0]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [animatingPrices, setAnimatingPrices] = useState<number[]>([]);
-  const [selectedStrategy, setSelectedStrategy] = useState<
-    "conservative" | "optimal" | "aggressive"
-  >("optimal");
-  const [showAIInsights, setShowAIInsights] = useState(true);
-  const [bundleRecommendations, setBundleRecommendations] = useState<any[]>([]);
 
-  const selectedItemsData = shelfItems.filter((item) =>
-    selectedItems.includes(item.id),
-  );
-  const aiRecommendations = generateAIRecommendations(
-    selectedItemsData,
-    selectedItems.length,
-  );
-  const currentRecommendation = aiRecommendations[selectedStrategy];
-
-  useEffect(() => {
-    const bundles = getBundleRecommendations(selectedItemsData);
-    setBundleRecommendations(bundles || []);
-  }, [selectedItems]);
-
-  const calculateSmartDiscount = (item: any, baseDiscount: number) => {
-    let smartDiscount = baseDiscount;
-
-    // AI-enhanced discount calculation
-    if (item.daysToExpiry <= 1) smartDiscount += 10; // Critical urgency
-    if (item.demandScore > 80) smartDiscount += 5; // High demand item
-    if (item.sellThroughRate < 70) smartDiscount += 8; // Low sell-through
-
-    // Progressive bundle discount
-    const bundleBonus = Math.min(selectedItems.length * 2, 15);
-    smartDiscount += bundleBonus;
-
-    // Apply bundle recommendations
-    const applicableBundles = bundleRecommendations.filter(
-      (bundle) => selectedItems.length >= bundle.minItems,
-    );
-    if (applicableBundles.length > 0) {
-      const bestBundle = applicableBundles[applicableBundles.length - 1];
-      smartDiscount += bestBundle.extraDiscount;
-    }
-
-    return Math.min(smartDiscount, 50); // Cap at 50%
+  const calculateProgressiveDiscount = (itemCount: number) => {
+    const totalDiscount = Math.min(
+      baseDiscount[0] + (itemCount - 1) * baseDiscount[0] * multiplier[0],
+      50,
+    ); // Cap at 50%
+    return Math.round(totalDiscount);
   };
 
-  const calculateDiscountedPrice = (item: any) => {
-    const discountPercent = selectedItems.includes(item.id)
-      ? calculateSmartDiscount(item, currentRecommendation.discount)
-      : 0;
-    return item.currentPrice * (1 - discountPercent / 100);
+  const calculateDiscountedPrice = (
+    originalPrice: number,
+    itemCount: number,
+  ) => {
+    const discountPercent = calculateProgressiveDiscount(itemCount);
+    return originalPrice * (1 - discountPercent / 100);
   };
 
   const handleItemSelect = (itemId: number) => {
