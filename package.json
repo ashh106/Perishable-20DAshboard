@@ -1,7 +1,16 @@
 {
-  "name": "fusion-starter",
+  "name": "walmart-smart-perishables",
   "private": true,
   "type": "module",
+  "description": "AI-powered dashboard for managing perishable inventory with dynamic pricing and real-time analytics",
+  "keywords": [
+    "walmart",
+    "inventory",
+    "ai",
+    "dashboard",
+    "perishables",
+    "progressive-discount"
+  ],
   "pkg": {
     "assets": [
       "dist/spa/*"
