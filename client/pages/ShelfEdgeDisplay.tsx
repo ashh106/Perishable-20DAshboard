@@ -259,9 +259,11 @@ export default function ShelfEdgeDisplay() {
         {shelfItems.map((item) => {
           const isSelected = selectedItems.includes(item.id);
           const discountPercent = isSelected
-            ? calculateSmartDiscount(item, currentRecommendation.discount)
+            ? calculateProgressiveDiscount(selectedItems.length)
             : 0;
-          const discountedPrice = calculateDiscountedPrice(item);
+          const discountedPrice = isSelected
+            ? calculateDiscountedPrice(item.currentPrice, selectedItems.length)
+            : item.currentPrice;
           const isAnimating = animatingPrices.includes(item.id);
 
           return (
