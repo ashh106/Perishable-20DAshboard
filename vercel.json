@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist/server/node-build.mjs",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     },
     {
@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/dist/server/node-build.mjs"
+      "dest": "/api/chat.js"
     },
     {
       "src": "/(.*)",
@@ -25,10 +25,5 @@
   "buildCommand": "npm run build",
   "env": {
     "NODE_ENV": "production"
-  },
-  "functions": {
-    "dist/server/node-build.mjs": {
-      "runtime": "nodejs18.x"
-    }
   }
 }
