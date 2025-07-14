@@ -70,6 +70,9 @@ export function createServer() {
   app.get("/api/protected/profile", getProfile);
   app.put("/api/protected/profile", updateProfile);
 
+  // AI Chat route
+  app.post("/api/protected/chat", handleChat);
+
   // Inventory management routes
   app.get("/api/protected/stores/:storeId/inventory", getInventoryItems);
   app.put("/api/protected/inventory/:itemId", updateInventoryItem);
