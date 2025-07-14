@@ -1,43 +1,106 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Lightbulb, Search, TrendingUp, Download } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Lightbulb,
+  Search,
+  TrendingUp,
+  Download,
+  Filter,
+  CheckCircle,
+  Brain,
+  Copy,
+} from "lucide-react";
 
 const storeData = [
   {
     id: "#1234",
     location: "Dallas, TX",
+    region: "North Texas",
     spoilageRate: "2.1%",
+    savings: "$127/week",
     topActions: [
       "20% markdown at 2 days",
       "Copia donation weekly",
       "Enhanced QR codes",
     ],
     performance: "excellent",
+    aiRecommendations: true,
+    weeklyVolume: "1,200 gal",
+    successStory: "Reduced spoilage by 35% using GenAI predictions",
   },
   {
     id: "#5678",
     location: "Austin, TX",
+    region: "Central Texas",
     spoilageRate: "2.8%",
+    savings: "$98/week",
     topActions: [
       "15% markdown at 3 days",
       "Zero-depack automation",
       "Staff training program",
     ],
     performance: "good",
+    aiRecommendations: false,
+    weeklyVolume: "950 gal",
+    successStory: "Automated routing cut disposal costs by 40%",
   },
   {
     id: "#9012",
     location: "Houston, TX",
+    region: "Southeast Texas",
     spoilageRate: "1.9%",
+    savings: "$156/week",
     topActions: [
       "25% markdown at 1 day",
       "Bi-weekly donations",
       "Smart inventory alerts",
     ],
     performance: "excellent",
+    aiRecommendations: true,
+    weeklyVolume: "1,400 gal",
+    successStory: "Best-in-class freshness tracking drives customer loyalty",
+  },
+  {
+    id: "#3456",
+    location: "San Antonio, TX",
+    region: "South Texas",
+    spoilageRate: "3.2%",
+    savings: "$78/week",
+    topActions: [
+      "10% markdown at 4 days",
+      "Manual donation calls",
+      "Basic expiry alerts",
+    ],
+    performance: "needs-improvement",
+    aiRecommendations: false,
+    weeklyVolume: "800 gal",
+    successStory: "Implementing progressive pricing this quarter",
+  },
+  {
+    id: "#7890",
+    location: "Fort Worth, TX",
+    region: "North Texas",
+    spoilageRate: "2.4%",
+    savings: "$112/week",
+    topActions: [
+      "18% markdown at 2.5 days",
+      "Customer feedback integration",
+      "Cross-training initiatives",
+    ],
+    performance: "good",
+    aiRecommendations: true,
+    weeklyVolume: "1,100 gal",
+    successStory: "Customer personalization boosted near-expiry sales 30%",
   },
 ];
 
@@ -55,23 +118,82 @@ const getPerformanceBadge = (performance: string) => {
 };
 
 export default function BestPracticesHub() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [regionFilter, setRegionFilter] = useState("all");
+  const [performanceFilter, setPerformanceFilter] = useState("all");
+  const [copiedStores, setCopiedStores] = useState<string[]>([]);
+
+  const filteredStores = storeData.filter((store) => {
+    const matchesSearch =
+      store.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      store.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRegion =
+      regionFilter === "all" || store.region === regionFilter;
+    const matchesPerformance =
+      performanceFilter === "all" || store.performance === performanceFilter;
+    return matchesSearch && matchesRegion && matchesPerformance;
+  });
+
+  const handleAdoptSettings = (storeId: string) => {
+    setCopiedStores([...copiedStores, storeId]);
+    setTimeout(() => {
+      setCopiedStores(copiedStores.filter((id) => id !== storeId));
+    }, 3000);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             Best Practices Hub
+            <Badge className="bg-walmart-teal text-white">AI-Enhanced</Badge>
           </h2>
-          <p className="text-gray-600">Cross-store insights and learnings</p>
+          <p className="text-gray-600">
+            Cross-store insights and learnings with GenAI analysis
+          </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Search by Store ID or Region"
               className="pl-10 w-64"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+
+          <Select value={regionFilter} onValueChange={setRegionFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by Region" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Regions</SelectItem>
+              <SelectItem value="North Texas">North Texas</SelectItem>
+              <SelectItem value="Central Texas">Central Texas</SelectItem>
+              <SelectItem value="Southeast Texas">Southeast Texas</SelectItem>
+              <SelectItem value="South Texas">South Texas</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={performanceFilter}
+            onValueChange={setPerformanceFilter}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by Performance" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Performance</SelectItem>
+              <SelectItem value="excellent">Excellent</SelectItem>
+              <SelectItem value="good">Good</SelectItem>
+              <SelectItem value="needs-improvement">
+                Needs Improvement
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
           <Button
             variant="outline"
             className="bg-white border-gray-200 hover:bg-gray-50"
