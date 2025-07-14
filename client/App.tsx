@@ -42,14 +42,7 @@ const App = () => (
               </DashboardLayout>
             }
           />
-          <Route
-            path="/markdown"
-            element={
-              <DashboardLayout>
-                <MarkdownRecommendations />
-              </DashboardLayout>
-            }
-          />
+
           <Route
             path="/waste-routing"
             element={
