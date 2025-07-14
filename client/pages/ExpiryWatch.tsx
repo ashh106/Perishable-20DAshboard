@@ -381,10 +381,7 @@ export default function ExpiryWatch() {
                             </Button>
                           )}
                           {isApplied && (
-                            <CheckCircle
-                              className="w-4 h-4 text-status-green"
-                              title="Discount Applied"
-                            />
+                            <CheckCircle className="w-4 h-4 text-status-green" />
                           )}
                         </div>
 
