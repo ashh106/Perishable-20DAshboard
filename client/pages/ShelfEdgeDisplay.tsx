@@ -157,175 +157,102 @@ export default function ShelfEdgeDisplay() {
         </Badge>
       </div>
 
-      {/* GenAI Pricing Recommendations */}
-      {selectedItems.length > 0 && (
-        <Card className="bg-gradient-to-r from-walmart-blue/5 to-walmart-teal/5 border-walmart-blue">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-walmart-blue" />
-              GenAI Pricing Recommendations
-              <Badge className="bg-walmart-teal text-white">
-                {selectedItems.length} item{selectedItems.length > 1 ? "s" : ""}{" "}
-                selected
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-              {/* Conservative Strategy */}
-              <Card
-                className={`cursor-pointer transition-all ${selectedStrategy === "conservative" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:shadow-md"}`}
-                onClick={() => setSelectedStrategy("conservative")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BarChart3 className="w-4 h-4 text-blue-600" />
-                    <h4 className="font-semibold text-blue-900">
-                      Conservative
-                    </h4>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold text-blue-600">
-                      {aiRecommendations.conservative.discount}%
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {aiRecommendations.conservative.reasoning}
-                    </p>
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>
-                        Expected sales:{" "}
-                        {aiRecommendations.conservative.expectedSales}
-                      </span>
-                      <span>
-                        Confidence: {aiRecommendations.conservative.confidence}%
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Optimal Strategy */}
-              <Card
-                className={`cursor-pointer transition-all ${selectedStrategy === "optimal" ? "ring-2 ring-green-500 bg-green-50" : "hover:shadow-md"}`}
-                onClick={() => setSelectedStrategy("optimal")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-green-600" />
-                    <h4 className="font-semibold text-green-900">Optimal</h4>
-                    <Badge className="bg-green-500 text-white text-xs">
-                      RECOMMENDED
-                    </Badge>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold text-green-600">
-                      {aiRecommendations.optimal.discount}%
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {aiRecommendations.optimal.reasoning}
-                    </p>
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>
-                        Expected sales:{" "}
-                        {aiRecommendations.optimal.expectedSales}
-                      </span>
-                      <span>
-                        Confidence: {aiRecommendations.optimal.confidence}%
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Aggressive Strategy */}
-              <Card
-                className={`cursor-pointer transition-all ${selectedStrategy === "aggressive" ? "ring-2 ring-red-500 bg-red-50" : "hover:shadow-md"}`}
-                onClick={() => setSelectedStrategy("aggressive")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="w-4 h-4 text-red-600" />
-                    <h4 className="font-semibold text-red-900">Aggressive</h4>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold text-red-600">
-                      {aiRecommendations.aggressive.discount}%
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {aiRecommendations.aggressive.reasoning}
-                    </p>
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>
-                        Expected sales:{" "}
-                        {aiRecommendations.aggressive.expectedSales}
-                      </span>
-                      <span>
-                        Confidence: {aiRecommendations.aggressive.confidence}%
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Progressive Discount Controls */}
+      <Card className="bg-gradient-to-r from-walmart-blue/5 to-walmart-teal/5 border-walmart-blue">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="w-5 h-5 text-walmart-blue" />
+            Progressive Discount Configuration
+            <Badge className="bg-walmart-teal text-white">
+              <Brain className="w-3 h-3 mr-1" />
+              Manual Control
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-900">
+                Base Discount: {baseDiscount[0]}%
+              </label>
+              <Slider
+                value={baseDiscount}
+                onValueChange={setBaseDiscount}
+                max={30}
+                min={5}
+                step={5}
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">
+                Starting discount for the first item
+              </p>
             </div>
 
-            {/* Bundle Recommendations */}
-            {bundleRecommendations.length > 0 && (
-              <div className="space-y-3">
-                <h5 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-yellow-500" />
-                  Smart Bundle Deals Available
-                </h5>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {bundleRecommendations.map((bundle, index) => (
-                    <div
-                      key={index}
-                      className="bg-white border border-yellow-200 rounded-lg p-3"
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div
-                          className={`w-8 h-8 ${bundle.color} rounded-full flex items-center justify-center`}
-                        >
-                          <bundle.icon className="w-4 h-4 text-white" />
-                        </div>
-                        <div>
-                          <h6 className="font-semibold text-sm">
-                            {bundle.name}
-                          </h6>
-                          <p className="text-xs text-gray-600">
-                            +{bundle.extraDiscount}% extra discount
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-500">
-                        {bundle.description}
-                      </p>
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-900">
+                Progressive Multiplier: {multiplier[0]}x
+              </label>
+              <Slider
+                value={multiplier}
+                onValueChange={setMultiplier}
+                max={2.0}
+                min={0.5}
+                step={0.1}
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">
+                How much discount increases per additional item
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-900">
+                Preview Calculation
+              </label>
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>1 item:</span>
+                    <span className="font-medium">{baseDiscount[0]}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>2 items:</span>
+                    <span className="font-medium">
+                      {calculateProgressiveDiscount(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>3 items:</span>
+                    <span className="font-medium">
+                      {calculateProgressiveDiscount(3)}%
+                    </span>
+                  </div>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between text-sm font-bold text-walmart-blue">
+                      <span>Max discount:</span>
+                      <span>50%</span>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
+          </div>
 
-            {/* AI Insights Toggle */}
-            <div className="flex items-center justify-between pt-4 border-t">
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-gray-400" />
+                <TrendingUp className="w-4 h-4 text-gray-400" />
                 <span className="text-sm text-gray-600">
-                  Time to sell: {currentRecommendation.timeToSell}
+                  Formula: Base + (Items-1) × Base × Multiplier
                 </span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAIInsights(!showAIInsights)}
-                className="flex items-center gap-2"
-              >
-                <Brain className="w-4 h-4" />
-                {showAIInsights ? "Hide" : "Show"} AI Insights
-              </Button>
+              <span className="text-xs text-gray-500">
+                Adjust sliders to control progressive pricing
+              </span>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Shelf Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
