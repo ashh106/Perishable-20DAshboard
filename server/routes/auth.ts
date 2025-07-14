@@ -125,11 +125,7 @@ export const authMiddleware: RequestHandler = (req, res, next) => {
 };
 
 export const roleMiddleware = (allowedRoles: string[]) => {
-  return (
-    req: Express.Request,
-    res: Express.Response,
-    next: Express.NextFunction,
-  ) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({ error: "Authentication required" });
     }
