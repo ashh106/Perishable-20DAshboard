@@ -98,6 +98,15 @@ export const login: RequestHandler = async (req, res) => {
   }
 };
 
+// Extend Express Request type
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
+
 export const authMiddleware: RequestHandler = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
