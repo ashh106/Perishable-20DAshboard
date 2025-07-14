@@ -13,6 +13,7 @@ import {
   Monitor,
   Heart,
 } from "lucide-react";
+import { AIChatbot } from "./AIChatbot";
 import {
   Sidebar,
   SidebarContent,
