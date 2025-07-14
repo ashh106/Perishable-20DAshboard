@@ -155,6 +155,27 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Main Content */}
           <main className="flex-1 p-6">{children}</main>
         </SidebarInset>
+
+        {/* AI Chatbot - Available on all pages */}
+        <AIChatbot
+          currentPage={
+            location.pathname === "/"
+              ? "Dashboard Home"
+              : location.pathname === "/expiry-watch"
+                ? "Expiry Watch"
+                : location.pathname === "/shelf-display"
+                  ? "Shelf-Edge Display"
+                  : location.pathname === "/customer-feedback"
+                    ? "Customer Feedback"
+                    : location.pathname === "/best-practices"
+                      ? "Best Practices Hub"
+                      : location.pathname === "/waste-routing"
+                        ? "Waste Routing"
+                        : location.pathname === "/freshness-qr"
+                          ? "Freshness QR"
+                          : "Dashboard"
+          }
+        />
       </div>
     </SidebarProvider>
   );
