@@ -257,71 +257,309 @@ export default function ExpiryWatch() {
         </Card>
       </div>
 
-      {/* Items Table */}
+      {/* Enhanced Items Table with Inline AI Recommendations */}
       <Card className="bg-white border-gray-200">
         <CardHeader>
-          <CardTitle className="text-lg font-bold text-gray-900">
+          <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
             Items Requiring Attention
+            <Badge className="bg-walmart-teal text-white">
+              <Brain className="w-3 h-3 mr-1" />
+              AI-Enhanced
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200">
-                <tr>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">
-                    SKU
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">
-                    Description
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">
-                    Days to Expiry
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">
-                    Quantity
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">
-                    Status
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {expiryItems.map((item) => (
-                  <tr
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-walmart-blue mx-auto"></div>
+              <p className="text-gray-600 mt-2">Loading expiring items...</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {(
+                expiringItems || [
+                  {
+                    id: 1,
+                    sku: "MLK-001",
+                    name: "Whole Milk 1 Gallon",
+                    description: "Whole Milk 1 Gallon",
+                    daysToExpiry: 1,
+                    days_to_expiry: 1,
+                    quantity: 24,
+                    quantity_on_hand: 24,
+                    current_price: 4.99,
+                    status: "critical",
+                  },
+                  {
+                    id: 2,
+                    sku: "MLK-002",
+                    name: "2% Milk 1 Gallon",
+                    description: "2% Milk 1 Gallon",
+                    daysToExpiry: 2,
+                    days_to_expiry: 2,
+                    quantity: 18,
+                    quantity_on_hand: 18,
+                    current_price: 4.79,
+                    status: "warning",
+                  },
+                  {
+                    id: 3,
+                    sku: "MLK-003",
+                    name: "Skim Milk 1 Gallon",
+                    description: "Skim Milk 1 Gallon",
+                    daysToExpiry: 3,
+                    days_to_expiry: 3,
+                    quantity: 15,
+                    quantity_on_hand: 15,
+                    current_price: 4.59,
+                    status: "warning",
+                  },
+                ]
+              ).map((item) => {
+                const daysLeft = item.daysToExpiry || item.days_to_expiry;
+                const isExpanded = expandedRows.has(item.id.toString());
+                const isApplied = appliedRecommendations.has(
+                  item.id.toString(),
+                );
+                const isLoading = loadingApply.has(item.id.toString());
+                const aiRec = generateAIRecommendation(item);
+                const hasAIRec = daysLeft <= 3;
+
+                return (
+                  <div
                     key={item.id}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    className="border border-gray-200 rounded-lg overflow-hidden"
                   >
-                    <td className="py-3 px-4 font-mono text-sm">{item.sku}</td>
-                    <td className="py-3 px-4">{item.description}</td>
-                    <td className="py-3 px-4 font-semibold">
-                      {item.daysToExpiry} days
-                    </td>
-                    <td className="py-3 px-4">{item.quantity} units</td>
-                    <td className="py-3 px-4">
-                      <Badge className={getStatusColor(item.status)}>
-                        {getStatusText(item.status)}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline">
-                          <Eye className="w-4 h-4 mr-1" />
-                          Review
-                        </Button>
-                        <Button size="sm" variant="ghost">
-                          <Bell className="w-4 h-4" />
-                        </Button>
+                    {/* Main Row */}
+                    <div className="bg-white hover:bg-gray-50 transition-colors">
+                      <div className="grid grid-cols-6 gap-4 py-4 px-6 items-center">
+                        <div className="font-mono text-sm font-semibold">
+                          {item.sku}
+                        </div>
+
+                        <div className="col-span-2">
+                          <p className="font-medium text-gray-900">
+                            {item.description || item.name}
+                          </p>
+                        </div>
+
+                        <div className="text-center">
+                          <span className="font-bold text-lg">
+                            {Math.round(daysLeft)}
+                          </span>
+                          <p className="text-xs text-gray-500">days left</p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            className={getStatusColor(
+                              item.status ||
+                                (daysLeft <= 2
+                                  ? "critical"
+                                  : daysLeft <= 4
+                                    ? "warning"
+                                    : "good"),
+                            )}
+                          >
+                            {getStatusText(
+                              item.status ||
+                                (daysLeft <= 2
+                                  ? "critical"
+                                  : daysLeft <= 4
+                                    ? "warning"
+                                    : "good"),
+                            )}
+                          </Badge>
+                          {hasAIRec && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => toggleRow(item.id.toString())}
+                              className="h-7 w-7 p-0 hover:bg-walmart-blue/10"
+                              title="AI Recommendation Available"
+                            >
+                              <Lightbulb className="w-4 h-4 text-walmart-teal" />
+                            </Button>
+                          )}
+                          {isApplied && (
+                            <CheckCircle
+                              className="w-4 h-4 text-status-green"
+                              title="Discount Applied"
+                            />
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 justify-end">
+                          <span className="text-sm text-gray-600">
+                            {item.quantity_on_hand || item.quantity} units
+                          </span>
+                          <Button size="sm" variant="outline">
+                            <Eye className="w-4 h-4 mr-1" />
+                            Review
+                          </Button>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+
+                    {/* Collapsible AI Recommendation Panel */}
+                    {hasAIRec && (
+                      <Collapsible open={isExpanded}>
+                        <CollapsibleContent>
+                          <div className="bg-gradient-to-r from-walmart-teal/5 to-walmart-blue/5 border-t border-gray-200 p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                              {/* AI Recommendation */}
+                              <div className="lg:col-span-2">
+                                <div className="flex items-start gap-3">
+                                  <div className="p-2 bg-walmart-teal/10 rounded-lg">
+                                    <Brain className="w-5 h-5 text-walmart-teal" />
+                                  </div>
+                                  <div className="flex-1">
+                                    <h4 className="font-semibold text-gray-900 mb-2">
+                                      GenAI Recommendation
+                                    </h4>
+                                    <p className="text-gray-700 mb-3">
+                                      Apply{" "}
+                                      <strong>
+                                        {aiRec.recommendedDiscount}% markdown
+                                      </strong>{" "}
+                                      to sell {aiRec.expectedSales} units today.
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-4">
+                                      <strong>Reasoning:</strong>{" "}
+                                      {aiRec.reasoning}
+                                    </p>
+
+                                    {/* Discount Slider */}
+                                    <div className="space-y-3">
+                                      <div className="flex items-center justify-between">
+                                        <label className="text-sm font-medium text-gray-700">
+                                          Discount Percentage:{" "}
+                                          {discountValues[item.id.toString()] ||
+                                            aiRec.recommendedDiscount}
+                                          %
+                                        </label>
+                                        <span className="text-sm text-gray-500">
+                                          Max: 50%
+                                        </span>
+                                      </div>
+                                      <Slider
+                                        value={[
+                                          discountValues[item.id.toString()] ||
+                                            aiRec.recommendedDiscount,
+                                        ]}
+                                        onValueChange={(value) =>
+                                          handleDiscountChange(
+                                            item.id.toString(),
+                                            value,
+                                          )
+                                        }
+                                        max={50}
+                                        min={0}
+                                        step={5}
+                                        className="w-full"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Price Preview & Action */}
+                              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                <h5 className="font-semibold text-gray-900 mb-3">
+                                  Price Preview
+                                </h5>
+
+                                <div className="space-y-2 mb-4">
+                                  <div className="flex justify-between">
+                                    <span className="text-sm text-gray-600">
+                                      Original:
+                                    </span>
+                                    <span className="font-medium">
+                                      ${(item.current_price || 4.99).toFixed(2)}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-sm text-gray-600">
+                                      Discount:
+                                    </span>
+                                    <span className="font-medium text-status-red">
+                                      -
+                                      {discountValues[item.id.toString()] ||
+                                        aiRec.recommendedDiscount}
+                                      %
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between border-t pt-2">
+                                    <span className="font-semibold">
+                                      New Price:
+                                    </span>
+                                    <span className="font-bold text-walmart-blue">
+                                      $
+                                      {(
+                                        (item.current_price || 4.99) *
+                                        (1 -
+                                          (discountValues[item.id.toString()] ||
+                                            aiRec.recommendedDiscount) /
+                                            100)
+                                      ).toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="text-xs text-gray-500 mb-4">
+                                  <strong>Confidence:</strong>{" "}
+                                  {Math.round(aiRec.confidence)}%
+                                </div>
+
+                                <Button
+                                  onClick={() => handleApplyDiscount(item)}
+                                  disabled={isApplied || isLoading}
+                                  className={`w-full ${
+                                    isApplied
+                                      ? "bg-status-green hover:bg-status-green/90"
+                                      : "bg-walmart-blue hover:bg-walmart-blue/90"
+                                  }`}
+                                >
+                                  {isLoading ? (
+                                    <>
+                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                      Applying...
+                                    </>
+                                  ) : isApplied ? (
+                                    <>
+                                      <CheckCircle className="w-4 h-4 mr-2" />
+                                      Applied Successfully
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Save className="w-4 h-4 mr-2" />
+                                      Apply & Save
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    )}
+                  </div>
+                );
+              })}
+
+              {(!expiringItems || expiringItems.length === 0) && (
+                <div className="text-center py-8">
+                  <CheckCircle className="w-12 h-12 text-status-green mx-auto mb-3" />
+                  <h3 className="font-semibold text-gray-900 mb-1">
+                    All Items Fresh!
+                  </h3>
+                  <p className="text-gray-600">
+                    No items expiring in the next 5 days.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
